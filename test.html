@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    let p1=new Promise(resolve => {
+            setTimeout(()=>{
+                console.log(111)
+                resolve(111)
+            },1000)
+        })
+    let p2=new Promise(resolve => {
+            setTimeout(()=>{
+                console.log(222)
+                resolve(2222)
+            },2000)
+        })
+    Promise.all([p1,p2]).then(res=>{
+        console.log(res)
+    })
+</script>
+</body>
+</html>

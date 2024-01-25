@@ -1,6 +1,6 @@
 const initState={
     cartList:[],
-    keysChecked:[],
+    idsChecked:[],
 }
 export default function cartReducer(state = initState, action) {
     switch (action.type) {
@@ -11,53 +11,53 @@ export default function cartReducer(state = initState, action) {
             };
         }
         case 'UPDATE_ITEM_NUM': {
-            const {key,num}=action.data
-            const {cartList,keysChecked}=state
+            const {id,num}=action.data
+            const {cartList,idsChecked}=state
             let newList=cartList.map(item=>{
-                return item.key===key?{
+                return item.id===id?{
                     ...item,
                     num:num
                 }:item
             })
-            let index=keysChecked.find((item)=>(item===key))
+            let index=idsChecked.find((item)=>(item===id))
             let newListChecked=[]
             if(index){
-                newListChecked=[...keysChecked]
+                newListChecked=[...idsChecked]
             }else{
-                newListChecked=keysChecked
+                newListChecked=idsChecked
             }
 
             return {
                 ...state,
                 cartList: newList,
-                keysChecked:newListChecked
+                idsChecked:newListChecked
             };
         }
         case 'UPDATE_ITEM_CHECKED': {
             return {
                 ...state,
-                keysChecked:action.data.selectedRowKeys,
+                idsChecked:action.data.selectedRowKeys,
             };
         }
         case 'DELETE_ITEMS': {
             const deleteItems=action.data
-            const {cartList,keysChecked}=state
+            const {cartList,idsChecked}=state
             let newCartList=[]
-            let newKeysCheckedList=[]
+            let newIdsChecked=[]
             for(let i=0;i<cartList.length;i++){
-                if(!deleteItems.includes(cartList[i].key)){
+                if(!deleteItems.includes(cartList[i].id)){
                     newCartList.push(cartList[i])
                 }
             }
-            for(let i=0;i<keysChecked.length;i++){
-                if(!deleteItems.includes(keysChecked[i])){
-                    newKeysCheckedList.push(keysChecked[i])
+            for(let i=0;i<idsChecked.length;i++){
+                if(!deleteItems.includes(idsChecked[i])){
+                    newIdsChecked.push(idsChecked[i])
                 }
             }
             return {
                 ...state,
                 cartList: newCartList,
-                keysChecked: newKeysCheckedList
+                idsChecked: newIdsChecked
             };
         }
 

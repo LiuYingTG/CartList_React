@@ -41,7 +41,7 @@ function Cart(props) {
             render: (_, record) => <NumControl
                 num={record.num}
                 numChange={(num) => {
-                    numChange(record.key, num)
+                    numChange(record.id, num)
                 }}>
             </NumControl>,
         },
@@ -56,7 +56,7 @@ function Cart(props) {
             title: '操作',
             dataIndex: 'total',
             render: (_, record) => <Button danger onClick={() => {
-                deleteItem(record.key)
+                deleteItem(record.id)
             }}>删除</Button>,
         }
     ];
@@ -75,18 +75,27 @@ function Cart(props) {
 
     /*购物车商品数量变化*/
     // 缺一个防抖的函数
-    const numChange = (key, num) => {
-        // 发送请求，更新num
-        // 请求成功后更新redux
-        props.updateItemNum({
-            key, num
+    const numChange = (id, num) => {
+        axios.patch(`http://localhost:5000/cartList/${id}`,{
+            num:num
+        }).then(res=>{
+            if(res.status===200){
+                // 发送请求，更新num
+                // 请求成功后更新redux
+                props.updateItemNum({
+                    id, num
+                })
+            }else{
+                throw new Error('出错了')
+                message.error('error')
+            }
         })
 
     }
     // 确认模态框
 
     /*删除商品*/
-    const deleteItem = async (key) => {
+    const deleteItem = async (id) => {
         const res = await modal.confirm({
             title: '提示',
             content: '确认删除商品吗？',
@@ -101,8 +110,16 @@ function Cart(props) {
             return
         }
         // 请求删除，成功后dispatch到delete
-        message.success('删除成功')
-        deleteItems([key])
+        axios.delete(`http://localhost:5000/cartList/${id}`).then(res=>{
+            if(res.status===200){
+                message.success('删除成功')
+                deleteItems([id])
+            }else{
+                throw new Error('出错了')
+                message.error('出错了')
+            }
+        })
+
     }
     return (
         <div className={CartModuleCss.cart}>
@@ -113,6 +130,7 @@ function Cart(props) {
                             type: 'checkbox',
                             ...rowSelection,
                         }}
+                        rowKey={(record)=>record.id}
                         columns={columns}
                         dataSource={cartList}
                         pagination={{
